@@ -251,25 +251,44 @@ function openMesaModal(mesaId) {
     const mesa = app.getMesa(mesaId);
     if (!mesa) return;
     
+    // Actualizar textos del modal
     document.getElementById('modal-mesa-number').textContent = mesaId;
-    document.getElementById('modal-mesa-status').textContent = mesa.status === 'occupied' ? 'Ocupada' : (mesa.status === 'available' ? 'Disponible' : 'Inactiva');
-    const pedidoMesa = app.getMesaOrders(mesaId).filter(o =>o.status !== 'canceled' && o.status !== 'completed');
-    document.getElementById('modal-mesa-orders').textContent = pedidoMesa.length;
-    const tiempoElement = document.getElementById('modal-mesa-time');
-    if (mesa.status === 'occupied' && mesa.sessionStart) {
-        tiempoElement.textContent = app.getElapsedTime(mesa.sessionStart);
-    }else{
-        tiempoElement.textContent = '-';
-    }
+    document.getElementById('modal-mesa-status').textContent = mesa.status === 'occupied' ? 'Ocupada' : 'Disponible';
+    
+    // URL DE GITHUB (Asegúrate de que esta sea tu URL live)
     const urlBase = "https://cmperrazo.github.io/Cafeteria-Endulce/";
     const mesaUrl = `${urlBase}index.html?mesa=${mesaId}`;
+    
     const qrContainer = document.getElementById('qr-code');
-    const qrImageApi = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(mesaUrl)}&choe=UTF-8`;
+    const qrUrlDisplay = document.getElementById('qr-url');
+
+    // Limpiar el contenedor antes de poner la nueva imagen
     if (qrContainer) {
-        qrContainer.innerHTML = `<img src="${qrImageApi}" alt="QR Mesa ${mesaId}" style="border: 5px solid white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">`;
+        qrContainer.innerHTML = "Cargando QR..."; 
+        
+        // Generar la imagen usando la API de Google
+        const qrImageApi = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(mesaUrl)}&choe=UTF-8`;
+        
+        // Creamos la imagen y esperamos a que cargue
+        const img = new Image();
+        img.onload = function() {
+            qrContainer.innerHTML = ""; // Quitamos el "Cargando..."
+            qrContainer.appendChild(img);
+            img.style.border = "5px solid white";
+            img.style.borderRadius = "10px";
+        };
+        img.onerror = function() {
+            qrContainer.innerHTML = "Error al generar QR";
+        };
+        img.src = qrImageApi;
     }
-    document.getElementById('mesa-modal').classList.add('active');
-    document.getElementById('mesa-modal').style.display = 'flex';
+
+    if (qrUrlDisplay) qrUrlDisplay.textContent = mesaUrl;
+
+    // Mostrar modal
+    const modal = document.getElementById('mesa-modal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
 }
 
 function closeMesaModal() {
