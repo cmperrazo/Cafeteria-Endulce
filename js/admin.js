@@ -251,41 +251,33 @@ function openMesaModal(mesaId) {
     const mesa = app.getMesa(mesaId);
     if (!mesa) return;
     
-    // Actualizar textos del modal
+    // 1. Actualizar textos básicos
     document.getElementById('modal-mesa-number').textContent = mesaId;
     document.getElementById('modal-mesa-status').textContent = mesa.status === 'occupied' ? 'Ocupada' : 'Disponible';
     
-    // URL DE GITHUB (Asegúrate de que esta sea tu URL live)
+    // 2. Configurar la URL
     const urlBase = "https://cmperrazo.github.io/Cafeteria-Endulce/";
     const mesaUrl = `${urlBase}index.html?mesa=${mesaId}`;
     
+    // 3. Generar el QR de forma directa
     const qrContainer = document.getElementById('qr-code');
     const qrUrlDisplay = document.getElementById('qr-url');
-
-    // Limpiar el contenedor antes de poner la nueva imagen
+    
     if (qrContainer) {
-        qrContainer.innerHTML = "Cargando QR..."; 
-        
-        // Generar la imagen usando la API de Google
+        // Generamos el link de la imagen
         const qrImageApi = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(mesaUrl)}&choe=UTF-8`;
         
-        // Creamos la imagen y esperamos a que cargue
-        const img = new Image();
-        img.onload = function() {
-            qrContainer.innerHTML = ""; // Quitamos el "Cargando..."
-            qrContainer.appendChild(img);
-            img.style.border = "5px solid white";
-            img.style.borderRadius = "10px";
-        };
-        img.onerror = function() {
-            qrContainer.innerHTML = "Error al generar QR";
-        };
-        img.src = qrImageApi;
+        // Inyectamos el HTML directamente con un estilo que asegure visibilidad
+        qrContainer.innerHTML = `<img src="${qrImageApi}" 
+                                      alt="QR Mesa ${mesaId}" 
+                                      style="width:200px; height:200px; border:10px solid white; background:white; display:block; margin:0 auto;">`;
     }
 
-    if (qrUrlDisplay) qrUrlDisplay.textContent = mesaUrl;
+    if (qrUrlDisplay) {
+        qrUrlDisplay.innerHTML = `<a href="${mesaUrl}" target="_blank" style="color:#888; text-decoration:none; font-size:0.7rem;">${mesaUrl}</a>`;
+    }
 
-    // Mostrar modal
+    // 4. Abrir el modal
     const modal = document.getElementById('mesa-modal');
     modal.style.display = 'flex';
     modal.classList.add('active');
