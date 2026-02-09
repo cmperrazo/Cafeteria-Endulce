@@ -261,6 +261,13 @@ function openMesaModal(mesaId) {
     }else{
         tiempoElement.textContent = '-';
     }
+    const urlBase = "https://cmperrazo.github.io/Cafeteria-Endulce/";
+    const mesaUrl = `${urlBase}index.html?mesa=${mesaId}`;
+    const qrContainer = document.getElementById('qr-code');
+    const qrImageApi = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(mesaUrl)}&choe=UTF-8`;
+    if (qrContainer) {
+        qrContainer.innerHTML = `<img src="${qrImageApi}" alt="QR Mesa ${mesaId}" style="border: 5px solid white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">`;
+    }
     document.getElementById('mesa-modal').classList.add('active');
     document.getElementById('mesa-modal').style.display = 'flex';
 }
